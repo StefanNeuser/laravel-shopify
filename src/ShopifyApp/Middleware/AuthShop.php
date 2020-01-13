@@ -168,13 +168,14 @@ class AuthShop
         ];
 
         // Sometimes
+        $session = $request->input('session') ?? null;
         $code = $request->input('code') ?? null;
         $locale = $request->input('locale') ?? null;
         $state = $request->input('state') ?? null;
         $id = $request->input('id') ?? null;
         $ids = $request->input('ids') ?? null;
 
-        foreach (compact('code', 'locale', 'state', 'id', 'ids') as $key => $value) {
+        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value) {
             if ($value) {
                 $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
             }
@@ -226,13 +227,14 @@ class AuthShop
         ];
 
         // Sometimes present
+        $session = $refererQueryParams['session'] ?? null;
         $code = $refererQueryParams['code'] ?? null;
         $locale = $refererQueryParams['locale'] ?? null;
         $state = $refererQueryParams['state'] ?? null;
         $id = $refererQueryParams['id'] ?? null;
         $ids = $refererQueryParams['ids'] ?? null;
 
-        foreach (compact('code', 'locale', 'state', 'id', 'ids') as $key => $value) {
+        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value) {
             if ($value) {
                 $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
             }
@@ -279,12 +281,13 @@ class AuthShop
 
         // Sometimes present
         $code = $request->header('X-Shop-Code') ?? null;
+        $session = $request->header('X-Shop-Session') ?? null;
         $locale = $request->header('X-Shop-Locale') ?? null;
         $state = $request->header('X-Shop-State') ?? null;
         $id = $request->header('X-Shop-ID') ?? null;
         $ids = $request->header('X-Shop-IDs') ?? null;
 
-        foreach (compact('code', 'locale', 'state', 'id', 'ids') as $key => $value) {
+        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value) {
             if ($value) {
                 $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
             }
