@@ -78,7 +78,11 @@ class UsageCharge
                     'description' => $this->data['description'],
                 ],
             ]
-        )->body->usage_charge;
+        )->body;
+
+        if (empty($this->response->usage_charge)) {
+            return false; // capped_amount überschritten
+        }
 
         return $this->response;
     }
