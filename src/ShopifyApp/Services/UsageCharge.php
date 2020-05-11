@@ -94,7 +94,7 @@ class UsageCharge
      */
     public function save()
     {
-        if (!$this->response) {
+        if (empty($this->response->id)) {
             throw new Exception('No activation response was recieved.');
         }
 
