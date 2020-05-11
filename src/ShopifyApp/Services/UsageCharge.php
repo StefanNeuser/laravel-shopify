@@ -84,7 +84,7 @@ class UsageCharge
             return false; // capped_amount überschritten
         }
 
-        return $this->response;
+        return $this->response->usage_charge;
     }
 
     /**
