@@ -14,15 +14,17 @@ class AddPlanToShopsTableAndChargesTable extends Migration
      */
     public function up()
     {
-        Schema::table('charges', function (Blueprint $table) {
+        Schema::table('charges', function (Blueprint $table)
+        {
             // Linking
             $table->integer('plan_id')->unsigned()->nullable();
             $table->foreign('plan_id')->references('id')->on('plans');
         });
 
-        Schema::table('shops', function (Blueprint $table) {
+        Schema::table('shops', function (Blueprint $table)
+        {
             // Linking
-            $table->integer('plan_id')->unsigned()->nullable();
+            $table->integer('plan_id')->after('id')->unsigned()->nullable();
             $table->foreign('plan_id')->references('id')->on('plans');
         });
     }
@@ -34,9 +36,11 @@ class AddPlanToShopsTableAndChargesTable extends Migration
      */
     public function down()
     {
-        Schema::table('charges', function (Blueprint $table) {
+        Schema::table('charges', function (Blueprint $table)
+        {
             // @codeCoverageIgnoreStart
-            if (DB::getDriverName() != 'sqlite') {
+            if (DB::getDriverName() != 'sqlite')
+            {
                 $table->dropForeign(['plan_id']);
             }
             // @codeCoverageIgnoreEnd
@@ -44,9 +48,11 @@ class AddPlanToShopsTableAndChargesTable extends Migration
             $table->dropColumn(['plan_id']);
         });
 
-        Schema::table('shops', function (Blueprint $table) {
+        Schema::table('shops', function (Blueprint $table)
+        {
             // @codeCoverageIgnoreStart
-            if (DB::getDriverName() != 'sqlite') {
+            if (DB::getDriverName() != 'sqlite')
+            {
                 $table->dropForeign(['plan_id']);
             }
             // @codeCoverageIgnoreEnd
