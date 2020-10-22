@@ -30,7 +30,8 @@ class AuthShop
     public function handle(Request $request, Closure $next)
     {
         $validation = $this->validateShop($request);
-        if ($validation !== true) {
+        if ($validation !== true)
+        {
             return $validation;
         }
 
@@ -60,7 +61,8 @@ class AuthShop
         $session->setShop($shop);
 
         // We need to do a full flow if no shop or it is deleted
-        if ($shop === null || $shop->trashed() || !$session->isValid()) {
+        if ($shop === null || $shop->trashed() || !$session->isValid())
+        {
             // We have a bad session
             return $this->handleBadSession(
                 $session,
@@ -106,14 +108,16 @@ class AuthShop
     {
         // Query variable is highest priority
         $shopDomainParam = $this->getQueryDomain($request);
-        if ($shopDomainParam) {
+        if ($shopDomainParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopDomainParam);
         }
 
         // Then the value in the referer header (if validated)
         // See issue https://github.com/ohmybrew/laravel-shopify/issues/295
         $shopRefererParam = $this->getRefererDomain($request);
-        if ($shopRefererParam) {
+        if ($shopRefererParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopRefererParam);
         }
 
@@ -122,13 +126,15 @@ class AuthShop
         // For SPA's we need X-Shop-Domain and verification headers
         // See issue https://github.com/ohmybrew/laravel-shopify/issues/295
         $shopHeaderParam = $this->getHeaderDomain($request);
-        if ($shopHeaderParam) {
+        if ($shopHeaderParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopHeaderParam);
         }
 
         // If none of the above are available then pull from the session
         $shopDomainSession = $session->getDomain();
-        if ($shopDomainSession) {
+        if ($shopDomainSession)
+        {
             return ShopifyApp::sanitizeShopDomain($shopDomainSession);
         }
 
@@ -153,18 +159,21 @@ class AuthShop
     {
         // Extract the referer
         $shop = $request->input('shop');
-        if (!$shop) {
+        if (!$shop)
+        {
             return false;
         }
 
         // Verify
         $verify = [];
-        foreach ($request->all() as $key => $value) {
-            $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        foreach ($request->all() as $key => $value)
+        {
+            $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $shop;
         }
 
@@ -186,30 +195,35 @@ class AuthShop
     {
         // Extract the referer
         $referer = $request->header('referer');
-        if (!$referer) {
+        if (!$referer)
+        {
             return false;
         }
 
         // Get the values of the referer query params as an array
         $url = parse_url($referer, PHP_URL_QUERY);
         parse_str($url, $refererQueryParams);
-        if (!$refererQueryParams) {
+        if (!$refererQueryParams)
+        {
             return false;
         }
 
         // These 3 must always be present
-        if (!isset($refererQueryParams['shop']) || !isset($refererQueryParams['hmac']) || !isset($refererQueryParams['timestamp'])) {
+        if (!isset($refererQueryParams['shop']) || !isset($refererQueryParams['hmac']) || !isset($refererQueryParams['timestamp']))
+        {
             return false;
         }
 
         // Verify
         $verify = [];
-        foreach ($refererQueryParams as $key => $value) {
-            $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        foreach ($refererQueryParams as $key => $value)
+        {
+            $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $refererQueryParams['shop'];
         }
 
@@ -233,7 +247,9 @@ class AuthShop
     {
         // Extract the referer
         $shop = $request->header('X-Shop-Domain');
-        if (!$shop) {
+        return $shop;
+        if (!$shop)
+        {
             return false;
         }
 
@@ -255,14 +271,17 @@ class AuthShop
         $id = $request->header('X-Shop-ID') ?? null;
         $ids = $request->header('X-Shop-IDs') ?? null;
 
-        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value) {
-            if ($value) {
-                $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value)
+        {
+            if ($value)
+            {
+                $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
             }
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $shop;
         }
 
@@ -282,7 +301,8 @@ class AuthShop
         ShopSession $session,
         Request $request,
         string $shopDomain = null
-    ) {
+    )
+    {
         // Clear all session variables (domain, token, user, etc)
         $session->forget();
 
