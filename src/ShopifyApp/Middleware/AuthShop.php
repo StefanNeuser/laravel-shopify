@@ -4,15 +4,16 @@ namespace OhMyBrew\ShopifyApp\Middleware;
 
 use Closure;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use OhMyBrew\ShopifyApp\Exceptions\MissingShopDomainException;
-use OhMyBrew\ShopifyApp\Exceptions\SignatureVerificationException;
+use Illuminate\Support\Facades\Redirect;
 use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
 use OhMyBrew\ShopifyApp\Services\ShopSession;
+use OhMyBrew\ShopifyApp\Exceptions\MissingShopDomainException;
+use OhMyBrew\ShopifyApp\Exceptions\SignatureVerificationException;
 
 /**
  * Response for ensuring an authenticated shop.
@@ -245,38 +246,20 @@ class AuthShop
      */
     private function getHeaderDomain(Request $request)
     {
-        // Extract the referer
-        $shop = $request->header('X-Shop-Domain');
-        return $shop;
+        $shop = $request->header('X-Shop-shop');
         if (!$shop)
         {
             return false;
         }
 
-        // Always present
-        $signature = $request->header('X-Shop-Signature');
-        $timestamp = $request->header('X-Shop-Time');
-
-        $verify = [
-            'shop'      => $shop,
-            'hmac'      => $signature,
-            'timestamp' => $timestamp,
-        ];
-
-        // Sometimes present
-        $code = $request->header('X-Shop-Code') ?? null;
-        $session = $request->header('X-Shop-Session') ?? null;
-        $newDesignLanguage = $request->header('X-Shop-NewDesignLanguage') ?? null;
-        $locale = $request->header('X-Shop-Locale') ?? null;
-        $state = $request->header('X-Shop-State') ?? null;
-        $id = $request->header('X-Shop-ID') ?? null;
-        $ids = $request->header('X-Shop-IDs') ?? null;
-
-        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value)
+        $verify = [];
+        foreach ($request->headers as $key => $value)
         {
-            if ($value)
+            if (Str::startsWith($key, 'x-shop-'))
             {
-                $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
+                //  '_' is not allowed in headernames or laravel request object will not process them
+                $key = str_replace(['x-shop-', '-'], ['', '_'], $key);
+                $verify[$key] = is_array($value) ? $value[0] : $value;
             }
         }
 
@@ -285,7 +268,6 @@ class AuthShop
         {
             return $shop;
         }
-
         throw new SignatureVerificationException('Unable to verify signature.');
     }
 
