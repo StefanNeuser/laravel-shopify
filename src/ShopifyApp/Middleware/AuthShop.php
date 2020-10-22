@@ -266,6 +266,7 @@ class AuthShop
         // Sometimes present
         $code = $request->header('X-Shop-Code') ?? null;
         $session = $request->header('X-Shop-Session') ?? null;
+        $newDesignLanguage = $request->header('X-Shop-NewDesignLanguage') ?? null;
         $locale = $request->header('X-Shop-Locale') ?? null;
         $state = $request->header('X-Shop-State') ?? null;
         $id = $request->header('X-Shop-ID') ?? null;
