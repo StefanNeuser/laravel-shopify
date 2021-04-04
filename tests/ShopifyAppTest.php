@@ -48,7 +48,7 @@ class ShopifyAppTest extends TestCase
 
     public function testReturnsApiInstance()
     {
-        $this->assertEquals(\OhMyBrew\BasicShopifyAPI::class, get_class($this->shopifyApp->api()));
+        $this->assertEquals(\OhMyBrew\ShopifyApp\ShopifyAPI::class, get_class($this->shopifyApp->api()));
     }
 
     public function testReturnsApiInstanceWithRateLimiting()
@@ -72,18 +72,21 @@ class ShopifyAppTest extends TestCase
         $domains_3 = ['', false, null];
 
         // Test for standard myshopify.com
-        foreach ($domains as $domain) {
+        foreach ($domains as $domain)
+        {
             $this->assertEquals('my-shop.myshopify.com', $this->shopifyApp->sanitizeShopDomain($domain));
         }
 
         // Test if someone changed the domain
         Config::set('shopify-app.myshopify_domain', 'myshopify.io');
-        foreach ($domains_2 as $domain) {
+        foreach ($domains_2 as $domain)
+        {
             $this->assertEquals('my-shop.myshopify.io', $this->shopifyApp->sanitizeShopDomain($domain));
         }
 
         // Test for empty shops
-        foreach ($domains_3 as $domain) {
+        foreach ($domains_3 as $domain)
+        {
             $this->assertNull($this->shopifyApp->sanitizeShopDomain($domain));
         }
     }

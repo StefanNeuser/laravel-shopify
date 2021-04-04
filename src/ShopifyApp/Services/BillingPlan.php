@@ -26,7 +26,7 @@ class BillingPlan
     /**
      * The shop API.
      *
-     * @var \OhMyBrew\BasicShopifyAPI
+     * @var \OhMyBrew\ShopifyApp\ShopifyAPI
      */
     protected $api;
 
@@ -90,7 +90,8 @@ class BillingPlan
     public function getCharge()
     {
         // Check if we have a charge ID to use
-        if (!$this->chargeId) {
+        if (!$this->chargeId)
+        {
             throw new Exception('Can not get charge information without charge ID.');
         }
 
@@ -142,7 +143,8 @@ class BillingPlan
         ];
 
         // Handle capped amounts for UsageCharge API
-        if (isset($this->plan->capped_amount) && $this->plan->capped_amount > 0) {
+        if (isset($this->plan->capped_amount) && $this->plan->capped_amount > 0)
+        {
             $chargeDetails['capped_amount'] = $this->plan->capped_amount;
             $chargeDetails['terms'] = $this->plan->terms;
         }
@@ -161,7 +163,8 @@ class BillingPlan
     public function activate()
     {
         // Check if we have a charge ID to use
-        if (!$this->chargeId) {
+        if (!$this->chargeId)
+        {
             throw new Exception('Can not activate plan without a charge ID.');
         }
 
@@ -181,13 +184,15 @@ class BillingPlan
      */
     public function save()
     {
-        if (!$this->response) {
+        if (!$this->response)
+        {
             throw new Exception('No activation response was recieved.');
         }
 
         // Cancel the last charge
         $planCharge = $this->shop->planCharge();
-        if ($planCharge && !$planCharge->isDeclined() && !$planCharge->isCancelled()) {
+        if ($planCharge && !$planCharge->isDeclined() && !$planCharge->isCancelled())
+        {
             $planCharge->cancel();
         }
 
@@ -201,7 +206,8 @@ class BillingPlan
         $charge->type = $this->plan->type;
         $charge->status = $this->response->status;
 
-        if ($this->plan->isType(Plan::PLAN_RECURRING)) {
+        if ($this->plan->isType(Plan::PLAN_RECURRING))
+        {
             // Recurring plan specifics
             $charge->billing_on = $this->response->billing_on;
             $charge->trial_ends_on = $this->response->trial_ends_on;
@@ -213,12 +219,14 @@ class BillingPlan
         // Merge in the plan detaiplan_idls since the fields match the database columns
         $planDetails = $this->chargeParams();
         unset($planDetails['return_url']);
-        foreach ($planDetails as $key => $value) {
+        foreach ($planDetails as $key => $value)
+        {
             $charge->{$key} = $value;
         }
         $save = $charge->save();
 
-        if ($save) {
+        if ($save)
+        {
             // All good, update the shop's plan and take them off freemium (if applicable)
             $this->shop->update([
                 'freemium' => false,
@@ -237,7 +245,8 @@ class BillingPlan
      */
     protected function determineTrialDays()
     {
-        if (!$this->plan->hasTrial()) {
+        if (!$this->plan->hasTrial())
+        {
             // Not a trial-type plan, return none
             return 0;
         }
@@ -245,7 +254,8 @@ class BillingPlan
         // See if the shop has been charged for this plan before..
         // If they have, its a good chance its a reinstall
         $pc = $this->shop->planCharge($this->plan->id);
-        if ($pc !== null) {
+        if ($pc !== null)
+        {
             return $pc->remainingTrialDaysFromCancel();
         }
 

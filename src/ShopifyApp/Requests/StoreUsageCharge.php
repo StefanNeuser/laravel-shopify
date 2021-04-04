@@ -4,7 +4,7 @@ namespace OhMyBrew\ShopifyApp\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 
 /**
  * Handles validating a usage charge.
@@ -31,14 +31,16 @@ class StoreUsageCharge extends FormRequest
     public function withValidator(Validator $validator)
     {
         // Determine if the HMAC is correct
-        $validator->after(function (Validator $validator) {
+        $validator->after(function (Validator $validator)
+        {
             // Get the input values needed
             $data = [
                 'price'       => $this->request->get('price'),
                 'description' => $this->request->get('description'),
                 'signature'   => $this->request->get('signature'),
             ];
-            if ($this->request->has('redirect')) {
+            if ($this->request->has('redirect'))
+            {
                 $data['redirect'] = $this->request->get('redirect');
             }
 
@@ -47,7 +49,8 @@ class StoreUsageCharge extends FormRequest
 
             // Confirm the charge hasn't been tampered with
             $signatureLocal = ShopifyApp::createHmac(['data' => $data, 'buildQuery' => true]);
-            if (!hash_equals($signature, $signatureLocal)) {
+            if (!hash_equals($signature, $signatureLocal))
+            {
                 // Possible tampering
                 $validator->errors()->add('signature', 'Signature does not match.');
             }

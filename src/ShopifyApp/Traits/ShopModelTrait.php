@@ -3,11 +3,9 @@
 namespace OhMyBrew\ShopifyApp\Traits;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 use OhMyBrew\ShopifyApp\Models\Charge;
 use OhMyBrew\ShopifyApp\Models\Plan;
-use OhMyBrew\ShopifyApp\Scopes\NamespaceScope;
-use OhMyBrew\ShopifyApp\Services\ShopSession;
 
 /**
  * Responsible for reprecenting a shop record.
@@ -19,16 +17,10 @@ trait ShopModelTrait
     /**
      * The API instance.
      *
-     * @var \OhMyBrew\BasicShopifyAPI
+     * @var \OhMyBrew\ShopifyApp\ShopifyAPI
      */
     protected $api;
 
-    /**
-     * The session instance.
-     *
-     * @var \OhMyBrew\ShopifyApp\Services\ShopSession
-     */
-    protected $session;
 
     /**
      * Constructor for the model.
@@ -43,48 +35,17 @@ trait ShopModelTrait
     }
 
     /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new NamespaceScope());
-    }
-
-    /**
-     * Creates or returns an instance of session for the shop.
-     *
-     * @return \OhMyBrew\ShopifyApp\Services\ShopSession
-     */
-    public function session()
-    {
-        if (!$this->session) {
-            // Create new session instance
-            $this->session = new ShopSession($this);
-        }
-
-        // Return existing instance
-        return $this->session;
-    }
-
-    /**
      * Creates or returns an instance of API for the shop.
      *
-     * @return \OhMyBrew\BasicShopifyAPI
+     * @return \OhMyBrew\ShopifyApp\ShopifyAPI
      */
     public function api()
     {
-        if (!$this->api) {
-            // Get the domain and token
-            $shopDomain = $this->shopify_domain;
-            $token = $this->session()->getToken();
-
+        if (!$this->api)
+        {
             // Create new API instance
-            $this->api = ShopifyApp::api();
-            $this->api->setSession($shopDomain, $token);
+            $this->api = (ShopifyApp::api())->setShopDomain($this->shopify_domain)
+                ->setAccessToken($this->shopify_token);
         }
 
         // Return existing instance
@@ -157,15 +118,5 @@ trait ShopModelTrait
             ->where('plan_id', $planID ?? $this->plan_id)
             ->orderBy('created_at', 'desc')
             ->first();
-    }
-
-    /**
-     * Checks if the access token is filled.
-     *
-     * @return bool
-     */
-    public function hasOfflineAccess()
-    {
-        return !empty($this->shopify_token);
     }
 }

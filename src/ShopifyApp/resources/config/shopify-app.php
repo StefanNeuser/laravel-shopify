@@ -25,43 +25,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Namespace
-    |--------------------------------------------------------------------------
-    |
-    | This option allows you to set a namespace.
-    | Useful for multiple apps using the same database instance.
-    | Meaning, one shop can be part of many apps on the same database.
-    |
-    */
-
-    'namespace' => env('SHOPIFY_APP_NAMESPACE', null),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Shopify Jobs Namespace
-    |--------------------------------------------------------------------------
-    |
-    | This option option allows you to change out the default job namespace
-    | which is \App\Jobs. This option is mainly used if any custom configuration
-    | is done in autoload and does not need to be changed unless required.
-    |
-    */
-    'job_namespace' => env('SHOPIFY_JOB_NAMESPACE', '\\App\\Jobs\\'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Prefix
-    |--------------------------------------------------------------------------
-    |
-    | This option allows you to set a prefix for URLs.
-    | Useful for multiple apps using the same database instance.
-    |
-    */
-
-    'prefix' => env('SHOPIFY_APP_PREFIX', ''),
-
-    /*
-    |--------------------------------------------------------------------------
     | Shop Model
     |--------------------------------------------------------------------------
     |
@@ -70,22 +33,6 @@ return [
     */
 
     'shop_model' => env('SHOPIFY_SHOP_MODEL', '\OhMyBrew\ShopifyApp\Models\Shop'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | AppBridge Mode
-    |--------------------------------------------------------------------------
-    |
-    | AppBridge (embedded apps) are enabled by default. Set to false to use legacy
-    | mode and host the app inside your own container.
-    |
-    */
-
-    'appbridge_enabled' => (bool) env('SHOPIFY_APPBRIDGE_ENABLED', true),
-
-    // Use semver range to link to a major or minor version number.
-    // Leaving empty will use the latest verison - not recommended in production.
-    'appbridge_version' => env('SHOPIFY_APPBRIDGE_VERSION', '1'),
 
     /*
     |--------------------------------------------------------------------------
@@ -146,19 +93,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Shopify API Grant Mode
-    |--------------------------------------------------------------------------
-    |
-    | This option is for the grant mode when authenticating.
-    | Default is "offline", "per-user" is available as well.
-    | Note: Install will always be in offline mode.
-    |
-    */
-
-    'api_grant_mode' => env('SHOPIFY_API_GRANT_MODE', 'offline'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Shopify API Redirect
     |--------------------------------------------------------------------------
     |
@@ -167,19 +101,6 @@ return [
     */
 
     'api_redirect' => env('SHOPIFY_API_REDIRECT', '/authenticate'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Shopify API class
-    |--------------------------------------------------------------------------
-    |
-    | This option option allows you to change out the default API class
-    | which is OhMyBrew\BasicShopifyAPI. This option is mainly used for
-    | testing and does not need to be changed unless required.
-    |
-    */
-
-    'api_class' => env('SHOPIFY_API_CLASS', \OhMyBrew\BasicShopifyAPI::class),
 
     /*
     |--------------------------------------------------------------------------
@@ -222,18 +143,6 @@ return [
     */
 
     'api_rate_limit_cycle_buffer' => env('SHOPIFY_API_RATE_LIMIT_CYCLE_BUFFER', null),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Shopify "MyShopify" domain
-    |--------------------------------------------------------------------------
-    |
-    | The internal URL used by shops. This will not change but in the future
-    | it may.
-    |
-    */
-
-    'myshopify_domain' => env('SHOPIFY_MYSHOPIFY_DOMAIN', 'myshopify.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -288,8 +197,7 @@ return [
                 'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', 'https://some-app.com/webhook/orders-create')
             ],
             ...
-        */
-    ],
+        */],
 
     /*
     |--------------------------------------------------------------------------
@@ -308,8 +216,7 @@ return [
                 'display_scope' => env('SHOPIFY_SCRIPTTAG_1_DISPLAY_SCOPE', 'online_store')
             ],
             ...
-        */
-    ],
+        */],
 
     /*
     |--------------------------------------------------------------------------
@@ -328,8 +235,7 @@ return [
                 'job' => env('AFTER_AUTHENTICATE_JOB'), // example: \App\Jobs\AfterAuthenticateJob::class
                 'inline' => env('AFTER_AUTHENTICATE_JOB_INLINE', false) // False = dispatch job for later, true = dispatch immediately
             ],
-        */
-    ],
+        */],
 
     /*
     |--------------------------------------------------------------------------

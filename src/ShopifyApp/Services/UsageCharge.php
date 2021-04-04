@@ -21,7 +21,7 @@ class UsageCharge
     /**
      * The shop API.
      *
-     * @var \OhMyBrew\BasicShopifyAPI
+     * @var \OhMyBrew\ShopifyApp\ShopifyAPI
      */
     protected $api;
 

@@ -5,7 +5,7 @@ namespace OhMyBrew\ShopifyApp\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 
 /**
  * Response for ensuring a proper webhook request.
@@ -27,7 +27,8 @@ class AuthWebhook
         $data = $request->getContent();
 
         $hmacLocal = ShopifyApp::createHmac(['data' => $data, 'raw' => true, 'encode' => true]);
-        if (!hash_equals($hmac, $hmacLocal) || empty($shop)) {
+        if (!hash_equals($hmac, $hmacLocal) || empty($shop))
+        {
 
             // Issue with HMAC or missing shop header
             return Response::make('Invalid webhook signature.', 401);

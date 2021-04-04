@@ -17,14 +17,14 @@ class AddPlanToShopsTableAndChargesTable extends Migration
         Schema::table('charges', function (Blueprint $table)
         {
             // Linking
-            $table->integer('plan_id')->unsigned()->nullable();
+            $table->integer('plan_id')->after('charge_id')->unsigned()->nullable();
             $table->foreign('plan_id')->references('id')->on('plans');
         });
 
         Schema::table('shops', function (Blueprint $table)
         {
             // Linking
-            $table->integer('plan_id')->after('id')->unsigned()->nullable();
+            $table->integer('plan_id')->after('shop_id')->after('id')->unsigned()->nullable();
             $table->foreign('plan_id')->references('id')->on('plans');
         });
     }

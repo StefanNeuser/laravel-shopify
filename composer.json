@@ -1,6 +1,6 @@
 {
-    "name": "ohmybrew/laravel-shopify",
-    "description": "Shopify package for Laravel to aide in app development",
+    "name": "247apps/laravel-shopify",
+    "description": "Shopify package for Laravel package based on the laravel-shopify package from Tyler King",
     "keywords": [
         "laravel",
         "shopify",
@@ -17,10 +17,9 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
-        "laravel/framework": "~5.6 | ^6.0",
-        "ohmybrew/basic-shopify-api": "^6.0",
-        "doctrine/dbal": "~2.5",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/promises": "v1.3.1",
+        "laravel/framework": "^5.4 || ^6.0 || ^7.0 || ^8.0",
         "jenssegers/agent": "^2.6"
     },
     "require-dev": {
@@ -33,10 +32,7 @@
     "autoload": {
         "psr-4": {
             "OhMyBrew\\ShopifyApp\\": "src/ShopifyApp"
-        },
-        "files": [
-            "src/ShopifyApp/helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

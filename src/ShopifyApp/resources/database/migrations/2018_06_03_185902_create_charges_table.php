@@ -14,19 +14,26 @@ class CreateChargesTable extends Migration
     public function up()
     {
         // Thanks to @ncpope of Github.com
-        Schema::create('charges', function (Blueprint $table) {
+        Schema::create('charges', function (Blueprint $table)
+        {
             $table->increments('id');
 
             // Filled in when the charge is created, provided by shopify, unique makes it indexed
-            $table->integer('charge_id')->unique();
+            $table->bigInteger('charge_id')->unique();
+
+            // Linking to charge_id
+            $table->bigInteger('reference_charge')->nullable();
 
             // Test mode or real
-            $table->boolean('test');
+            $table->boolean('test')->default(false);
 
             $table->string('status')->nullable();
 
             // Name of the charge (for recurring or one time charges)
             $table->string('name')->nullable();
+            // Description support
+            $table->string('description')->nullable();
+
 
             // Terms for the usage charges
             $table->string('terms')->nullable();
@@ -58,6 +65,8 @@ class CreateChargesTable extends Migration
             // Not supported on Shopify's initial billing screen, but good for future use
             $table->timestamp('cancelled_on')->nullable();
 
+            $table->timestamp('expires_on')->nullable();
+
             // Provides created_at && updated_at columns
             $table->timestamps();
 
@@ -67,6 +76,12 @@ class CreateChargesTable extends Migration
             // Linking
             $table->integer('shop_id')->unsigned();
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
+        });
+
+        Schema::table('charges', function (Blueprint $table)
+        {
+            // Linking to charge_id, seperate schema block due to contraint issue
+            $table->foreign('reference_charge')->references('charge_id')->on('charges')->onDelete('cascade');
         });
     }
 

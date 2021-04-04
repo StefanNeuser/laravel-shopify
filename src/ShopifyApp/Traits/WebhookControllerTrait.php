@@ -21,7 +21,7 @@ trait WebhookControllerTrait
     public function handle($type)
     {
         // Get the job class and dispatch
-        $jobClass = Config::get('shopify-app.job_namespace').str_replace('-', '', ucwords($type, '-')).'Job';
+        $jobClass = '\\App\\Jobs\\' . str_replace('-', '', ucwords($type, '-')) . 'Job';
         $jobData = json_decode(Request::getContent());
 
         $jobClass::dispatch(

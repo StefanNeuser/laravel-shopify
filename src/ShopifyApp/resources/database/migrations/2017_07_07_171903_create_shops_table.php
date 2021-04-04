@@ -13,10 +13,12 @@ class CreateShopsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shops', function (Blueprint $table) {
+        Schema::create('shops', function (Blueprint $table)
+        {
             $table->increments('id');
             $table->string('shopify_domain');
             $table->string('shopify_token')->nullable(true)->default(null);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -5,7 +5,7 @@ namespace OhMyBrew\ShopifyApp\Traits;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 use OhMyBrew\ShopifyApp\Models\Charge;
 use OhMyBrew\ShopifyApp\Models\Plan;
 use OhMyBrew\ShopifyApp\Models\Shop;
@@ -28,7 +28,8 @@ trait BillingControllerTrait
     public function index(Plan $plan)
     {
         // If the plan is null, get a plan
-        if (is_null($plan) || ($plan && !$plan->exists)) {
+        if (is_null($plan) || ($plan && !$plan->exists))
+        {
             $plan = Plan::where('on_install', true)->first();
         }
 

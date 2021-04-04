@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 
 /**
  * Responsible for ensuring a proper app proxy request.
@@ -30,7 +30,8 @@ class AuthProxy
 
         // Build a local signature
         $signatureLocal = ShopifyApp::createHmac(['data' => $query, 'buildQuery' => true]);
-        if ($signature !== $signatureLocal || !isset($query['shop'])) {
+        if ($signature !== $signatureLocal || !isset($query['shop']))
+        {
             // Issue with HMAC or missing shop header
             return Response::make('Invalid proxy signature.', 401);
         }

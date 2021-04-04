@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use OhMyBrew\ShopifyApp\Events\AppLoggedIn;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 use OhMyBrew\ShopifyApp\Jobs\ScripttagInstaller;
 use OhMyBrew\ShopifyApp\Jobs\WebhookInstaller;
 use OhMyBrew\ShopifyApp\Models\Shop;
@@ -27,7 +27,7 @@ class AuthShopHandler
     /**
      * The shop API.
      *
-     * @var \OhMyBrew\BasicShopifyAPI
+     * @var \OhMyBrew\ShopifyApp\ShopifyAPI
      */
     protected $api;
 
@@ -43,7 +43,7 @@ class AuthShopHandler
         // Setup the API
         $this->shop = $shop;
         $this->api = ShopifyApp::api();
-        $this->api->setShop($this->shop->shopify_domain);
+        $this->api->setShopDomain($this->shop->shopify_domain);
 
         return $this;
     }
@@ -62,7 +62,7 @@ class AuthShopHandler
         return $this->api->getAuthUrl(
             Config::get('shopify-app.api_scopes'),
             URL::secure(Config::get('shopify-app.api_redirect')),
-            $mode ?? 'offline'
+            'offline'
         );
     }
 
@@ -97,7 +97,8 @@ class AuthShopHandler
      */
     public function postProcess()
     {
-        if (!$this->shop->trashed()) {
+        if (!$this->shop->trashed())
+        {
             return;
         }
 
@@ -140,7 +141,8 @@ class AuthShopHandler
     public function dispatchWebhooks()
     {
         $webhooks = Config::get('shopify-app.webhooks');
-        if (count($webhooks) > 0) {
+        if (count($webhooks) > 0)
+        {
             WebhookInstaller::dispatch($this->shop)
                 ->onQueue(Config::get('shopify-app.job_queues.webhooks'));
         }
@@ -154,7 +156,8 @@ class AuthShopHandler
     public function dispatchScripttags()
     {
         $scripttags = Config::get('shopify-app.scripttags');
-        if (count($scripttags) > 0) {
+        if (count($scripttags) > 0)
+        {
             ScripttagInstaller::dispatch($this->shop, $scripttags)
                 ->onQueue(Config::get('shopify-app.job_queues.scripttags'));
         }
@@ -177,12 +180,16 @@ class AuthShopHandler
          *
          * @return bool
          */
-        $fireJob = function ($config) {
+        $fireJob = function ($config)
+        {
             $job = $config['job'];
-            if (isset($config['inline']) && $config['inline'] === true) {
+            if (isset($config['inline']) && $config['inline'] === true)
+            {
                 // Run this job immediately
                 $job::dispatchNow($this->shop);
-            } else {
+            }
+            else
+            {
                 // Run later
                 $job::dispatch($this->shop)
                     ->onQueue(Config::get('shopify-app.job_queues.after_authenticate'));
@@ -192,8 +199,10 @@ class AuthShopHandler
         };
 
         // We have multi-jobs
-        if (isset($jobsConfig[0])) {
-            foreach ($jobsConfig as $jobConfig) {
+        if (isset($jobsConfig[0]))
+        {
+            foreach ($jobsConfig as $jobConfig)
+            {
                 // We have a job, pass the shop object to the contructor
                 $fireJob($jobConfig);
             }
@@ -202,7 +211,8 @@ class AuthShopHandler
         }
 
         // We have a single job
-        if (isset($jobsConfig['job'])) {
+        if (isset($jobsConfig['job']))
+        {
             return $fireJob($jobsConfig);
         }
 

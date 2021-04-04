@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 use OhMyBrew\ShopifyApp\Requests\AuthShop;
 use OhMyBrew\ShopifyApp\Services\AuthShopHandler;
 use OhMyBrew\ShopifyApp\Services\ShopSession;
@@ -46,15 +46,12 @@ trait AuthControllerTrait
         // Start the process
         $auth = new AuthShopHandler($shop);
 
-        if (!$request->filled('code')) {
+        if (!$request->filled('code'))
+        {
             // Handle a request without a code, do a fullpage redirect
             // Check if they have offline access, if they do not, this is most likely an install
             // If they do, fallback to using configured grant mode
-            $authUrl = $auth->buildAuthUrl(
-                $shop->hasOfflineAccess() ?
-                    Config::get('shopify-app.api_grant_mode') :
-                    ShopSession::GRANT_OFFLINE
-            );
+            $authUrl = $auth->buildAuthUrl();
 
             return View::make(
                 'shopify-app::auth.fullpage_redirect',
@@ -64,9 +61,6 @@ trait AuthControllerTrait
 
         // We have a good code, get the access details
         $access = $auth->getAccess($validated['code']);
-        $session = new ShopSession($shop);
-        $session->setDomain($shopDomain);
-        $session->setAccess($access);
 
         // Do post processing and dispatch the jobs
         $auth->postProcess();
@@ -87,12 +81,13 @@ trait AuthControllerTrait
     protected function returnTo()
     {
         // Set in AuthShop middleware
-        $return_to = Session::get('return_to');
-        if ($return_to) {
-            Session::forget('return_to');
+        // $return_to = Session::get('return_to');
+        // if ($return_to)
+        // {
+        //     Session::forget('return_to');
 
-            return Redirect::to($return_to);
-        }
+        //     return Redirect::to($return_to);
+        // }
 
         // No return_to, go to home route
         return Redirect::route('home');

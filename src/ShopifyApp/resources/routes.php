@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -9,24 +11,8 @@
 |
 */
 
-Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']], function () {
-    /*
-    |--------------------------------------------------------------------------
-    | Home Route
-    |--------------------------------------------------------------------------
-    |
-    | Homepage for an authenticated store. Store is checked with the auth.shop
-    | middleware and redirected to login if not.
-    |
-    */
-
-    Route::get(
-        '/',
-        'OhMyBrew\ShopifyApp\Controllers\HomeController@index'
-    )
-    ->middleware(['auth.shop', 'billable'])
-    ->name('home');
-
+Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']], function ()
+{
     /*
     |--------------------------------------------------------------------------
     | Login Route
@@ -55,7 +41,7 @@ Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']]
         '/authenticate',
         'OhMyBrew\ShopifyApp\Controllers\AuthController@authenticate'
     )
-    ->name('authenticate');
+        ->name('authenticate');
 
     /*
     |--------------------------------------------------------------------------
@@ -70,9 +56,9 @@ Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']]
         '/billing/{plan?}',
         'OhMyBrew\ShopifyApp\Controllers\BillingController@index'
     )
-    ->middleware(['auth.shop'])
-    ->where('plan', '^([0-9]+|)$')
-    ->name('billing');
+        ->middleware(['auth.shop'])
+        ->where('plan', '^([0-9]+|)$')
+        ->name('billing');
 
     /*
     |--------------------------------------------------------------------------
@@ -87,9 +73,9 @@ Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']]
         '/billing/process/{plan?}',
         'OhMyBrew\ShopifyApp\Controllers\BillingController@process'
     )
-    ->middleware(['auth.shop'])
-    ->where('plan', '^([0-9]+|)$')
-    ->name('billing.process');
+        ->middleware(['auth.shop'])
+        ->where('plan', '^([0-9]+|)$')
+        ->name('billing.process');
 
     /*
     |--------------------------------------------------------------------------
@@ -105,11 +91,12 @@ Route::group(['prefix' => config('shopify-app.prefix'), 'middleware' => ['web']]
         '/billing/usage-charge',
         'OhMyBrew\ShopifyApp\Controllers\BillingController@usageCharge'
     )
-    ->middleware(['auth.shop'])
-    ->name('billing.usage_charge');
+        ->middleware(['auth.shop'])
+        ->name('billing.usage_charge');
 });
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => ['api']], function ()
+{
     /*
     |--------------------------------------------------------------------------
     | Webhook Handler
@@ -123,6 +110,6 @@ Route::group(['middleware' => ['api']], function () {
         '/webhook/{type}',
         'OhMyBrew\ShopifyApp\Controllers\WebhookController@handle'
     )
-    ->middleware('auth.webhook')
-    ->name('webhook');
+        ->middleware('auth.webhook')
+        ->name('webhook');
 });

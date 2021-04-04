@@ -10,8 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
-use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
-use OhMyBrew\ShopifyApp\Services\ShopSession;
+use OhMyBrew\ShopifyApp\ShopifyApp;
 use OhMyBrew\ShopifyApp\Exceptions\MissingShopDomainException;
 use OhMyBrew\ShopifyApp\Exceptions\SignatureVerificationException;
 
@@ -48,25 +47,20 @@ class AuthShop
      */
     protected function validateShop(Request $request)
     {
-        // Setup the session service
-        $session = new ShopSession();
-
-        // Grab the shop's myshopify domain from query or session
-        $shopDomain = $this->getShopDomain($request, $session);
+        $shopDomain = $this->getShopDomain($request);
 
         // Get the shop based on domain and update the session service
         $shopModel = Config::get('shopify-app.shop_model');
         $shop = $shopModel::withTrashed()
             ->where(['shopify_domain' => $shopDomain])
             ->first();
-        $session->setShop($shop);
 
         // We need to do a full flow if no shop or it is deleted
-        if ($shop === null || $shop->trashed() || !$session->isValid())
+        if ($shop === null || $shop->trashed())
         {
             // We have a bad session
             return $this->handleBadSession(
-                $session,
+                // $session,
                 $request,
                 $shopDomain
             );
@@ -105,7 +99,10 @@ class AuthShop
      *
      * @return bool|string
      */
-    private function getShopDomain(Request $request, ShopSession $session)
+    private function getShopDomain(
+        Request $request
+        // ShopSession $session
+    )
     {
         // Query variable is highest priority
         $shopDomainParam = $this->getQueryDomain($request);
@@ -281,16 +278,16 @@ class AuthShop
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function handleBadSession(
-        ShopSession $session,
+        // ShopSession $session,
         Request $request,
         string $shopDomain = null
     )
     {
         // Clear all session variables (domain, token, user, etc)
-        $session->forget();
+        // $session->forget();
 
         // Set the return-to path so we can redirect after successful authentication
-        Session::put('return_to', $request->fullUrl());
+        // Session::put('return_to', $request->fullUrl());
 
         // Depending on the type of grant mode, we need to do a full auth or partial
         return Redirect::route(
