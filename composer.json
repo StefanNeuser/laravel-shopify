@@ -1,6 +1,6 @@
 {
-    "name": "247apps/laravel-shopify",
-    "description": "Shopify package for Laravel package based on the laravel-shopify package from Tyler King",
+    "name": "osiset/laravel-shopify",
+    "description": "Shopify package for Laravel to aide in app development",
     "keywords": [
         "laravel",
         "shopify",
@@ -32,7 +32,10 @@
     "autoload": {
         "psr-4": {
             "OhMyBrew\\ShopifyApp\\": "src/ShopifyApp"
-        }
+        },
+        "files": [
+            "src/ShopifyApp/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
