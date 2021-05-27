@@ -30,7 +30,7 @@ trait WebhookControllerTrait
         if ($shop->trashed())
         {
             logger(get_class() . ' - incoming webhook for TRASHED shop ' . $shopDomain);
-            return Response::make('shop is uninstalled', 500);
+            abort(500);
         }
         // Get the job class and dispatch
         $jobClass = Config::get('shopify-app.job_namespace') . str_replace('-', '', ucwords($type, '-')) . 'Job';
