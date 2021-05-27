@@ -63,7 +63,8 @@ class AppUninstalledJob implements ShouldQueue
      */
     public function handle()
     {
-        if (!$this->shop) {
+        if (!$this->shop)
+        {
             return false;
         }
 
@@ -105,7 +106,8 @@ class AppUninstalledJob implements ShouldQueue
     protected function cancelCharge()
     {
         $planCharge = $this->shop->planCharge();
-        if ($planCharge && !$planCharge->isDeclined() && !$planCharge->isCancelled()) {
+        if ($planCharge && !$planCharge->isDeclined() && !$planCharge->isCancelled())
+        {
             $planCharge->cancel();
         }
     }

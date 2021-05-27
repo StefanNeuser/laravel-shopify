@@ -2,6 +2,7 @@
 
 namespace OhMyBrew\ShopifyApp\Traits;
 
+use OhMyBrew\ShopifyApp\Models\Shop;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
@@ -20,12 +21,23 @@ trait WebhookControllerTrait
      */
     public function handle($type)
     {
+        $shopDomain = Request::header('x-shopify-shop-domain');
+
+        $shopModel = Config::get('shopify-app.shop_model');
+        /** @var Shop */
+        $shop = $shopModel::withTrashed()->where('shopify_domain', $this->shopDomain)->firstOrFail();
+
+        if ($shop->trashed())
+        {
+            logger(get_class() . ' - incoming webhook for TRASHED shop ' . $shopDomain);
+            return Response::make('shop is uninstalled', 500);
+        }
         // Get the job class and dispatch
-        $jobClass = Config::get('shopify-app.job_namespace').str_replace('-', '', ucwords($type, '-')).'Job';
+        $jobClass = Config::get('shopify-app.job_namespace') . str_replace('-', '', ucwords($type, '-')) . 'Job';
         $jobData = json_decode(Request::getContent());
 
         $jobClass::dispatch(
-            Request::header('x-shopify-shop-domain'),
+            $shopDomain,
             $jobData
         );
 
