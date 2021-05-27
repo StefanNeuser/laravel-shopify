@@ -25,7 +25,7 @@ trait WebhookControllerTrait
 
         $shopModel = Config::get('shopify-app.shop_model');
         /** @var Shop */
-        $shop = $shopModel::withTrashed()->where('shopify_domain', $this->shopDomain)->firstOrFail();
+        $shop = $shopModel::withTrashed()->where('shopify_domain', $shopDomain)->firstOrFail();
 
         if ($shop->trashed())
         {
