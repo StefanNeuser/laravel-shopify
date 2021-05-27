@@ -2,6 +2,7 @@
 
 namespace OhMyBrew\ShopifyApp\Test\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Config;
 use OhMyBrew\ShopifyApp\Models\Charge;
 use OhMyBrew\ShopifyApp\Models\Plan;
@@ -45,9 +46,6 @@ class UsageChargeTest extends TestCase
         $this->assertTrue(is_object($result));
     }
 
-    /**
-     * @expectedException Exception
-     */
     public function testActivateFailureForNonRecurringCharges()
     {
         // Stub the responses
@@ -67,12 +65,10 @@ class UsageChargeTest extends TestCase
 
         // Do the call
         $uc = new UsageCharge($shop, ['price' => '1.00', 'description' => 'Test']);
+        $this->expectException(Exception::class);
         $uc->activate();
     }
 
-    /**
-     * @expectedException Exception
-     */
     public function testSaveFailureForNoResponse()
     {
         // Create the shop
@@ -80,6 +76,7 @@ class UsageChargeTest extends TestCase
 
         // Do the call
         $uc = new UsageCharge($shop, ['price' => '1.00', 'description' => 'Test']);
+        $this->expectException(Exception::class);
         $uc->save();
     }
 }

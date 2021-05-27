@@ -65,7 +65,8 @@ class UsageCharge
     {
         // Ensure we have a recurring charge
         $currentCharge = $this->shop->planCharge();
-        if (!$currentCharge->isType(Charge::CHARGE_RECURRING)) {
+        if (!$currentCharge->isType(Charge::CHARGE_RECURRING))
+        {
             throw new Exception('Can only create usage charges for recurring charge.');
         }
 
@@ -78,19 +79,24 @@ class UsageCharge
                     'description' => $this->data['description'],
                 ],
             ]
-        )->body->usage_charge;
+        )->body;
 
-        return $this->response;
+        if (empty($this->response->usage_charge))
+        {
+            return false; // capped_amount überschritten
+        }
+
+        return $this->response->usage_charge;
     }
 
     /**
      * Saves the usage charge to the database.
      *
-     * @return bool
      */
     public function save()
     {
-        if (!$this->response) {
+        if (empty($this->response->usage_charge->id))
+        {
             throw new Exception('No activation response was recieved.');
         }
 
@@ -102,10 +108,10 @@ class UsageCharge
         $charge->type = Charge::CHARGE_USAGE;
         $charge->reference_charge = $planCharge->charge_id;
         $charge->shop_id = $this->shop->id;
-        $charge->charge_id = $this->response->id;
-        $charge->price = $this->response->price;
-        $charge->description = $this->response->description;
-        $charge->billing_on = $this->response->billing_on;
+        $charge->charge_id = $this->response->usage_charge->id;
+        $charge->price = $this->response->usage_charge->price;
+        $charge->description = $this->response->usage_charge->description;
+        $charge->billing_on = $this->response->usage_charge->billing_on;
         $charge->save();
 
         return $charge;

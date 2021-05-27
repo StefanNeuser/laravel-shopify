@@ -4,15 +4,16 @@ namespace OhMyBrew\ShopifyApp\Middleware;
 
 use Closure;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use OhMyBrew\ShopifyApp\Exceptions\MissingShopDomainException;
-use OhMyBrew\ShopifyApp\Exceptions\SignatureVerificationException;
+use Illuminate\Support\Facades\Redirect;
 use OhMyBrew\ShopifyApp\Facades\ShopifyApp;
 use OhMyBrew\ShopifyApp\Services\ShopSession;
+use OhMyBrew\ShopifyApp\Exceptions\MissingShopDomainException;
+use OhMyBrew\ShopifyApp\Exceptions\SignatureVerificationException;
 
 /**
  * Response for ensuring an authenticated shop.
@@ -30,7 +31,8 @@ class AuthShop
     public function handle(Request $request, Closure $next)
     {
         $validation = $this->validateShop($request);
-        if ($validation !== true) {
+        if ($validation !== true)
+        {
             return $validation;
         }
 
@@ -60,7 +62,8 @@ class AuthShop
         $session->setShop($shop);
 
         // We need to do a full flow if no shop or it is deleted
-        if ($shop === null || $shop->trashed() || !$session->isValid()) {
+        if ($shop === null || $shop->trashed() || !$session->isValid())
+        {
             // We have a bad session
             return $this->handleBadSession(
                 $session,
@@ -106,14 +109,16 @@ class AuthShop
     {
         // Query variable is highest priority
         $shopDomainParam = $this->getQueryDomain($request);
-        if ($shopDomainParam) {
+        if ($shopDomainParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopDomainParam);
         }
 
         // Then the value in the referer header (if validated)
         // See issue https://github.com/ohmybrew/laravel-shopify/issues/295
         $shopRefererParam = $this->getRefererDomain($request);
-        if ($shopRefererParam) {
+        if ($shopRefererParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopRefererParam);
         }
 
@@ -122,13 +127,15 @@ class AuthShop
         // For SPA's we need X-Shop-Domain and verification headers
         // See issue https://github.com/ohmybrew/laravel-shopify/issues/295
         $shopHeaderParam = $this->getHeaderDomain($request);
-        if ($shopHeaderParam) {
+        if ($shopHeaderParam)
+        {
             return ShopifyApp::sanitizeShopDomain($shopHeaderParam);
         }
 
         // If none of the above are available then pull from the session
         $shopDomainSession = $session->getDomain();
-        if ($shopDomainSession) {
+        if ($shopDomainSession)
+        {
             return ShopifyApp::sanitizeShopDomain($shopDomainSession);
         }
 
@@ -153,18 +160,21 @@ class AuthShop
     {
         // Extract the referer
         $shop = $request->input('shop');
-        if (!$shop) {
+        if (!$shop)
+        {
             return false;
         }
 
         // Verify
         $verify = [];
-        foreach ($request->all() as $key => $value) {
-            $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        foreach ($request->all() as $key => $value)
+        {
+            $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $shop;
         }
 
@@ -186,30 +196,35 @@ class AuthShop
     {
         // Extract the referer
         $referer = $request->header('referer');
-        if (!$referer) {
+        if (!$referer)
+        {
             return false;
         }
 
         // Get the values of the referer query params as an array
         $url = parse_url($referer, PHP_URL_QUERY);
         parse_str($url, $refererQueryParams);
-        if (!$refererQueryParams) {
+        if (!$refererQueryParams)
+        {
             return false;
         }
 
         // These 3 must always be present
-        if (!isset($refererQueryParams['shop']) || !isset($refererQueryParams['hmac']) || !isset($refererQueryParams['timestamp'])) {
+        if (!isset($refererQueryParams['shop']) || !isset($refererQueryParams['hmac']) || !isset($refererQueryParams['timestamp']))
+        {
             return false;
         }
 
         // Verify
         $verify = [];
-        foreach ($refererQueryParams as $key => $value) {
-            $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        foreach ($refererQueryParams as $key => $value)
+        {
+            $verify[$key] = is_array($value) ? '["' . implode('", "', $value) . '"]' : $value;
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $refererQueryParams['shop'];
         }
 
@@ -231,41 +246,28 @@ class AuthShop
      */
     private function getHeaderDomain(Request $request)
     {
-        // Extract the referer
-        $shop = $request->header('X-Shop-Domain');
-        if (!$shop) {
+        $shop = $request->header('X-Shop-shop');
+        if (!$shop)
+        {
             return false;
         }
 
-        // Always present
-        $signature = $request->header('X-Shop-Signature');
-        $timestamp = $request->header('X-Shop-Time');
-
-        $verify = [
-            'shop'      => $shop,
-            'hmac'      => $signature,
-            'timestamp' => $timestamp,
-        ];
-
-        // Sometimes present
-        $code = $request->header('X-Shop-Code') ?? null;
-        $session = $request->header('X-Shop-Session') ?? null;
-        $locale = $request->header('X-Shop-Locale') ?? null;
-        $state = $request->header('X-Shop-State') ?? null;
-        $id = $request->header('X-Shop-ID') ?? null;
-        $ids = $request->header('X-Shop-IDs') ?? null;
-
-        foreach (compact('code', 'locale', 'state', 'id', 'ids', 'session') as $key => $value) {
-            if ($value) {
-                $verify[$key] = is_array($value) ? '["'.implode('", "', $value).'"]' : $value;
+        $verify = [];
+        foreach ($request->headers as $key => $value)
+        {
+            if (Str::startsWith($key, 'x-shop-'))
+            {
+                //  '_' is not allowed in headernames or laravel request object will not process them
+                $key = str_replace(['x-shop-', '-'], ['', '_'], $key);
+                $verify[$key] = is_array($value) ? $value[0] : $value;
             }
         }
 
         // Make sure there is no param spoofing attempt
-        if (ShopifyApp::api()->verifyRequest($verify)) {
+        if (ShopifyApp::api()->verifyRequest($verify))
+        {
             return $shop;
         }
-
         throw new SignatureVerificationException('Unable to verify signature.');
     }
 
@@ -282,7 +284,8 @@ class AuthShop
         ShopSession $session,
         Request $request,
         string $shopDomain = null
-    ) {
+    )
+    {
         // Clear all session variables (domain, token, user, etc)
         $session->forget();
 
