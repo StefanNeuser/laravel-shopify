@@ -40,13 +40,21 @@ trait AuthControllerTrait
     {
         // Get the validated data
         $validated = $request->validated();
+
+        // blacklist
+        if (in_array($validated['shop'], ['hey-mindful.myshopify.com']))
+        {
+            return redirect('/login');
+        }
+
         $shopDomain = ShopifyApp::sanitizeShopDomain($validated['shop']);
         $shop = ShopifyApp::shop($shopDomain);
 
         // Start the process
         $auth = new AuthShopHandler($shop);
 
-        if (!$request->filled('code')) {
+        if (!$request->filled('code'))
+        {
             // Handle a request without a code, do a fullpage redirect
             // Check if they have offline access, if they do not, this is most likely an install
             // If they do, fallback to using configured grant mode
@@ -88,7 +96,8 @@ trait AuthControllerTrait
     {
         // Set in AuthShop middleware
         $return_to = Session::get('return_to');
-        if ($return_to) {
+        if ($return_to)
+        {
             Session::forget('return_to');
 
             return Redirect::to($return_to);
